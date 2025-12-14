@@ -106,7 +106,7 @@
 <body>
 
   <div class="todo-app">
-    <h1>⏰ To-Do with Alarm</h1>
+    <h1>To-Do with Alarm</h1>
 
     <div class="input-group">
       <input id="taskInput" type="text" placeholder="Task name">
@@ -207,7 +207,7 @@
         if (todo.notified) return;
 
         if (Notification.permission === "granted") {
-          new Notification("⏰ Reminder", {
+          new Notification("Reminder", {
             body: todo.text
           });
         }
