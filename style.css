@@ -48,8 +48,8 @@ body {
 }
 
 #theme-toggle {
-  border: none;
   background: none;
+  border: none;
   font-size: 20px;
   cursor: pointer;
 }
@@ -74,8 +74,8 @@ body {
 
 .product {
   background: var(--card);
-  border-radius: 15px;
   padding: 20px;
+  border-radius: 15px;
   text-align: center;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
   transition: 0.3s;
@@ -109,6 +109,10 @@ body {
   display: none;
 }
 
+.cart-overlay.active {
+  display: block;
+}
+
 .cart-sidebar {
   position: fixed;
   right: -320px;
@@ -124,14 +128,17 @@ body {
   right: 0;
 }
 
-.cart-overlay.active {
-  display: block;
-}
-
 .cart-item {
   display: flex;
   justify-content: space-between;
   margin: 10px 0;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 8px;
 }
 
 /* MODALS */

@@ -1,8 +1,28 @@
 const products = [
-  { id: 1, name: "Wireless Headphones", price: 2999, img: "images/headphones.jpg" },
-  { id: 2, name: "Laptop", price: 54999, img: "images/laptop.jpg" },
-  { id: 3, name: "Running Shoes", price: 3999, img: "images/shoes.jpg" },
-  { id: 4, name: "Smart Watch", price: 4999, img: "images/watch.jpg" }
+  {
+    id: 1,
+    name: "Wireless Headphones",
+    price: 2999,
+    img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: 2,
+    name: "Laptop",
+    price: 54999,
+    img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: 3,
+    name: "Running Shoes",
+    price: 3999,
+    img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: 4,
+    name: "Smart Watch",
+    price: 4999,
+    img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80"
+  }
 ];
 
 const list = document.getElementById("product-list");
@@ -32,23 +52,36 @@ function render(items) {
   });
 }
 
+/* CART FUNCTIONS */
 function addToCart(product) {
   cart.push(product);
+  updateCart();
+}
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
   updateCart();
 }
 
 function updateCart() {
   cartItems.innerHTML = "";
   let total = 0;
-  cart.forEach(p => {
-    total += p.price;
-    cartItems.innerHTML += `
-      <div class="cart-item">
-        <span>${p.name}</span>
-        <span>₹${p.price}</span>
+
+  cart.forEach((item, index) => {
+    total += item.price;
+    const div = document.createElement("div");
+    div.className = "cart-item";
+    div.innerHTML = `
+      <span>${item.name}</span>
+      <div>
+        <span>₹${item.price}</span>
+        <button class="remove-btn">❌</button>
       </div>
     `;
+    div.querySelector(".remove-btn").onclick = () => removeFromCart(index);
+    cartItems.appendChild(div);
   });
+
   cartCount.textContent = cart.length;
   totalEl.textContent = total;
 }
@@ -66,7 +99,7 @@ cartOverlay.onclick = () => {
 
 /* CHECKOUT */
 document.getElementById("checkout-btn").onclick = () => {
-  if (cart.length === 0) return alert("Cart empty");
+  if (cart.length === 0) return alert("Cart is empty");
   document.getElementById("checkout-modal").style.display = "flex";
 };
 
