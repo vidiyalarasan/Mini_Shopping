@@ -1,228 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>To-Do List with Alarms</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #43cea2, #185a9d);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 0;
-    }
-
-    .todo-app {
-      background: white;
-      width: 100%;
-      max-width: 450px;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-    }
-
-    input {
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    button {
-      background: #185a9d;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #12497d;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    li {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    li.completed span {
-      text-decoration: line-through;
-      color: #999;
-    }
-
-    .task-info {
-      flex: 1;
-      cursor: pointer;
-    }
-
-    .time {
-      font-size: 12px;
-      color: #666;
-    }
-
-    .delete-btn {
-      background: #ff4d4d;
-      border: none;
-      color: white;
-      padding: 5px 8px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopEase</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <div class="todo-app">
-    <h1>To-Do with Alarm</h1>
-
-    <div class="input-group">
-      <input id="taskInput" type="text" placeholder="Task name">
-      <input id="timeInput" type="datetime-local">
-      <button onclick="addTodo()">Add Task</button>
+  <header class="navbar">
+    <div class="logo">🛍️ ShopEase</div>
+    <input type="text" id="search" placeholder="Search amazing products...">
+    <div class="cart">
+      🛒 <span id="cart-count">0</span>
     </div>
+  </header>
 
-    <ul id="todoList"></ul>
-  </div>
+  <section class="hero">
+    <h1>Shop Smart. Shop Stylish.</h1>
+    <p>Discover premium products with the best UI experience.</p>
+  </section>
 
-  <script>
-    const taskInput = document.getElementById("taskInput");
-    const timeInput = document.getElementById("timeInput");
-    const list = document.getElementById("todoList");
+  <main class="products" id="product-list"></main>
 
-    let todos = JSON.parse(localStorage.getItem("todos")) || [];
-
-    // Ask notification permission
-    if ("Notification" in window) {
-      Notification.requestPermission();
-    }
-
-    function saveTodos() {
-      localStorage.setItem("todos", JSON.stringify(todos));
-    }
-
-    function renderTodos() {
-      list.innerHTML = "";
-
-      todos.forEach(todo => {
-        const li = document.createElement("li");
-        if (todo.completed) li.classList.add("completed");
-
-        const info = document.createElement("div");
-        info.className = "task-info";
-        info.onclick = () => toggleTodo(todo.id);
-
-        info.innerHTML = `
-          <span>${todo.text}</span>
-          <div class="time">${todo.time ? new Date(todo.time).toLocaleString() : ""}</div>
-        `;
-
-        const del = document.createElement("button");
-        del.textContent = "Delete";
-        del.className = "delete-btn";
-        del.onclick = () => deleteTodo(todo.id);
-
-        li.appendChild(info);
-        li.appendChild(del);
-        list.appendChild(li);
-      });
-    }
-
-    function addTodo() {
-      const text = taskInput.value.trim();
-      const time = timeInput.value;
-
-      if (!text) return alert("Enter a task");
-
-      const todo = {
-        id: Date.now(),
-        text,
-        time,
-        completed: false,
-        notified: false
-      };
-
-      todos.push(todo);
-      saveTodos();
-      scheduleAlarm(todo);
-
-      taskInput.value = "";
-      timeInput.value = "";
-      renderTodos();
-    }
-
-    function toggleTodo(id) {
-      todos = todos.map(t =>
-        t.id === id ? { ...t, completed: !t.completed } : t
-      );
-      saveTodos();
-      renderTodos();
-    }
-
-    function deleteTodo(id) {
-      todos = todos.filter(t => t.id !== id);
-      saveTodos();
-      renderTodos();
-    }
-
-    function scheduleAlarm(todo) {
-      if (!todo.time) return;
-
-      const delay = new Date(todo.time).getTime() - Date.now();
-      if (delay <= 0) return;
-
-      setTimeout(() => {
-        if (todo.notified) return;
-
-        if (Notification.permission === "granted") {
-          new Notification("Reminder", {
-            body: todo.text
-          });
-        }
-
-        alert("Reminder: " + todo.text);
-
-        todo.notified = true;
-        saveTodos();
-      }, delay);
-    }
-
-    // Restore alarms on reload
-    todos.forEach(scheduleAlarm);
-    renderTodos();
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
