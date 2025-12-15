@@ -1,40 +1,86 @@
 const products = [
-  { name: "MacBook Pro", price: 1299, img: "https://picsum.photos/300?1" },
-  { name: "Wireless Headphones", price: 199, img: "https://picsum.photos/300?2" },
-  { name: "Smart Watch", price: 299, img: "https://picsum.photos/300?3" },
-  { name: "Sneakers", price: 149, img: "https://picsum.photos/300?4" },
-  { name: "Camera", price: 899, img: "https://picsum.photos/300?5" }
+  { id: 1, name: "Laptop", price: 900, img: "https://picsum.photos/300?1" },
+  { id: 2, name: "Headphones", price: 150, img: "https://picsum.photos/300?2" },
+  { id: 3, name: "Smart Watch", price: 250, img: "https://picsum.photos/300?3" },
+  { id: 4, name: "Shoes", price: 120, img: "https://picsum.photos/300?4" }
 ];
 
-let cart = 0;
 const list = document.getElementById("product-list");
 const cartCount = document.getElementById("cart-count");
-const search = document.getElementById("search");
+const cartItems = document.getElementById("cart-items");
+const totalEl = document.getElementById("total");
 
-function render(items) {
+const cartSidebar = document.getElementById("cart-sidebar");
+const cartOverlay = document.getElementById("cart-overlay");
+const openCart = document.getElementById("open-cart");
+
+const checkoutModal = document.getElementById("checkout-modal");
+const successModal = document.getElementById("success-modal");
+
+let cart = [];
+
+/* RENDER PRODUCTS */
+function renderProducts(items) {
   list.innerHTML = "";
   items.forEach(p => {
-    const card = document.createElement("div");
-    card.className = "product";
-    card.innerHTML = `
+    const div = document.createElement("div");
+    div.className = "product";
+    div.innerHTML = `
       <img src="${p.img}">
       <h3>${p.name}</h3>
       <p>$${p.price}</p>
       <button>Add to Cart</button>
     `;
-    card.querySelector("button").onclick = () => {
-      cart++;
-      cartCount.textContent = cart;
-      cartCount.style.transform = "scale(1.3)";
-      setTimeout(() => cartCount.style.transform = "scale(1)", 200);
-    };
-    list.appendChild(card);
+    div.querySelector("button").onclick = () => addToCart(p);
+    list.appendChild(div);
   });
 }
 
-search.addEventListener("input", e => {
-  const value = e.target.value.toLowerCase();
-  render(products.filter(p => p.name.toLowerCase().includes(value)));
-});
+/* CART */
+function addToCart(product) {
+  cart.push(product);
+  updateCart();
+}
 
-render(products);
+function updateCart() {
+  cartItems.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((item, index) => {
+    total += item.price;
+    const div = document.createElement("div");
+    div.className = "cart-item";
+    div.innerHTML = `
+      <span>${item.name}</span>
+      <span>$${item.price}</span>
+    `;
+    cartItems.appendChild(div);
+  });
+
+  cartCount.textContent = cart.length;
+  totalEl.textContent = total;
+}
+
+/* OPEN / CLOSE CART */
+openCart.onclick = () => {
+  cartSidebar.classList.add("active");
+  cartOverlay.classList.add("active");
+};
+
+cartOverlay.onclick = () => {
+  cartSidebar.classList.remove("active");
+  cartOverlay.classList.remove("active");
+};
+
+/* CHECKOUT */
+document.getElementById("checkout-btn").onclick = () => {
+  if (cart.length === 0) return alert("Cart is empty!");
+  checkoutModal.style.display = "flex";
+};
+
+document.getElementById("place-order").onclick = () => {
+  checkoutModal.style.display = "none";
+  successModal.style.display = "flex";
+};
+
+renderProducts(products);
